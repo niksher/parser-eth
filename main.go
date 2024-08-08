@@ -20,18 +20,17 @@ type AddressBalance struct {
 }
 
 func main() {
-	start := time.Now()
+	var err error
+	var w sync.WaitGroup
+	ch := make(chan string, 30)
+	chBlock := make(chan bool, 1)
+	const maxBlocks = 100
+
 	token := os.Getenv("TOKEN")
 	if token == "" {
 		fmt.Println("TOKEN is not set")
 		os.Exit(1)
 	}
-
-	var err error
-	var w sync.WaitGroup
-	ch := make(chan string, 10)
-	chBlock := make(chan bool, 1)
-	const maxBlocks = 100
 
 	blocks := getBlocks(token)
 	out := map[string]interface{}{}
@@ -69,9 +68,6 @@ func main() {
 		fmt.Println(addressBalance[len(addressBalance)-1].Address)
 		fmt.Println(addressBalance[0].Address)
 	}
-
-	elapsed := time.Since(start)
-	fmt.Printf("%s", elapsed)
 }
 
 func addressMapToStruct(addressMap map[string]*big.Int) []AddressBalance {
